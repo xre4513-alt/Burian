@@ -180,7 +180,7 @@ jobs:
         }
         EOF
 
-        # TempMonitorService.java (Background Alert Service)
+        # TempMonitorService.java
         cat << 'EOF' > app/src/main/java/com/temp/alert/TempMonitorService.java
         package com.temp.alert;
 
@@ -198,7 +198,7 @@ jobs:
 
         public class TempMonitorService extends Service {
             private static final String CHANNEL_ID = "temp_alert_channel";
-            private static final float TEMP_THRESHOLD = 40.0f; // Limit (40°C Se jyada hone par alert ayega)
+            private static final float TEMP_THRESHOLD = 40.0f;
 
             @Override
             public void onCreate() {
@@ -258,11 +258,10 @@ jobs:
         }
         EOF
 
-    - name: Grant Execute Permission for Gradle
-      run: gradle wrapper
-
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Setup and Build with Gradle Action
+      uses: gradle/gradle-build-action@v3
+      with:
+        arguments: assembleDebug
 
     - name: Upload APK to Artifacts
       uses: actions/upload-artifact@v4
