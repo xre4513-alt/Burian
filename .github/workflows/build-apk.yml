@@ -19,6 +19,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Setup Gradle Environment
+      uses: gradle/actions/setup-gradle@v3
+
     - name: Generate Android Project Source
       run: |
         mkdir -p app/src/main/java/com/temp/alert
@@ -258,10 +261,13 @@ jobs:
         }
         EOF
 
-    - name: Setup and Build with Gradle Action
-      uses: gradle/gradle-build-action@v3
-      with:
-        arguments: assembleDebug
+    - name: Generate Gradle Wrapper
+      run: |
+        gradle wrapper --gradle-version 8.1.1
+        chmod +x gradlew
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
 
     - name: Upload APK to Artifacts
       uses: actions/upload-artifact@v4
