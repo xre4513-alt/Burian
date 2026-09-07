@@ -19,14 +19,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Gradle Environment
-      uses: gradle/actions/setup-gradle@v3
-
-    - name: Generate Android Project Source
+    - name: Setup Android Project Files
       run: |
         mkdir -p app/src/main/java/com/temp/alert
         mkdir -p app/src/main/res/layout
         mkdir -p app/src/main/res/values
+        mkdir -p gradle/wrapper
 
         # Root build.gradle
         cat << 'EOF' > build.gradle
@@ -73,6 +71,17 @@ jobs:
         # settings.gradle
         cat << 'EOF' > settings.gradle
         include ':app'
+        EOF
+
+        # gradle-wrapper.properties
+        cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+        distributionBase=GRADLE_USER_HOME
+        distributionPath=wrapper/dists
+        distributionUrl=https\://services.gradle.org/distributions/gradle-8.1.1-bin.zip
+        networkTimeout=10000
+        validateDistributionUrl=true
+        zipStoreBase=GRADLE_USER_HOME
+        zipStorePath=wrapper/dists
         EOF
 
         # AndroidManifest.xml
@@ -261,13 +270,8 @@ jobs:
         }
         EOF
 
-    - name: Generate Gradle Wrapper
-      run: |
-        gradle wrapper --gradle-version 8.1.1
-        chmod +x gradlew
-
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      run: gradle assembleDebug
 
     - name: Upload APK to Artifacts
       uses: actions/upload-artifact@v4
